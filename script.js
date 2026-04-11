@@ -1,4 +1,3 @@
-// ========== ضع الرابط هنا ============
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYOkqBWmZ2Ts0H-PBDHK3UcDhxIP4GKxX0gaZzYMH4C8Odr26snNh15prk4ULCY20L/exec';
 // =====================================
 
