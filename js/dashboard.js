@@ -85,17 +85,17 @@ window.viewOrder = function(id, name, phone, address, items, total, status, pres
     const content = document.getElementById('orderDetailsContent');
     const actionDiv = document.getElementById('orderActionDiv');
     
-    let itemsHtml = `<ul>`;
-    let parsedItems = [];
+    let itemsHtml = ``;
     try {
-        parsedItems = JSON.parse(decodeURIComponent(items));
+        let parsedItems = JSON.parse(decodeURIComponent(items));
+        itemsHtml = `<ul>`;
         parsedItems.forEach(item => {
             itemsHtml += `<li>${item.name} - الكمية: ${item.quantity} - ${item.price} ج.م</li>`;
         });
+        itemsHtml += `</ul>`;
     } catch(e) {
-        itemsHtml += `<li>${decodeURIComponent(items)}</li>`; // Fallback for old simple strings
+        itemsHtml = `<div style="white-space: pre-wrap; padding: 10px; background: rgba(0,0,0,0.03); border-radius: 5px; border: 1px solid var(--border-color);">${decodeURIComponent(items)}</div>`; // Fallback for textual strings
     }
-    itemsHtml += `</ul>`;
     
     let prescriptionHtml = '';
     if (prescriptionUrl && prescriptionUrl !== 'undefined' && prescriptionUrl !== 'null' && prescriptionUrl.length > 5) {
@@ -174,7 +174,11 @@ onSnapshot(query(ordersCol, orderBy('createdAt', 'desc')), (snapshot) => {
         const dateObj = order.createdAt ? order.createdAt.toDate() : new Date();
         const dateStr = dateObj.toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' });
 
-        const safeItems = encodeURIComponent(JSON.stringify(order.items || order.orderDetails || []));
+        let itemsToPass = order.orderDetails || "لا توجد تفاصيل";
+        if (order.items && order.items.length > 0) {
+            itemsToPass = JSON.stringify(order.items);
+        }
+        const safeItems = encodeURIComponent(itemsToPass);
         const total = order.total || 0;
         const prescriptionUrl = order.prescriptionUrl || '';
 
