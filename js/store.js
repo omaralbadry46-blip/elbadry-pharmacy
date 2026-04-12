@@ -12,14 +12,14 @@ async function loadProducts() {
     try {
         const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
         const querySnapshot = await getDocs(q);
-        
+
         allProducts = [];
         querySnapshot.forEach((doc) => {
             allProducts.push({ id: doc.id, ...doc.data() });
         });
-        
+
         renderProducts(allProducts);
-        
+
     } catch (e) {
         console.error("Error loading products: ", e);
         productsGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--error-color); padding: 50px;">حدث خطأ أثناء الاتصال بقاعدة البيانات. تأكد من إعداد Firebase بشكل صحيح.</div>`;
@@ -31,9 +31,9 @@ function renderProducts(products) {
         productsGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-gray);">لا توجد منتجات في هذا القسم حالياً.</p>`;
         return;
     }
-    
+
     productsGrid.innerHTML = '';
-    
+
     products.forEach(prod => {
         const div = document.createElement('div');
         div.className = 'product-card';
@@ -50,7 +50,7 @@ function renderProducts(products) {
         `;
         productsGrid.appendChild(div);
     });
-    
+
     // Attach event listeners targeting dynamically created buttons
     document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -61,7 +61,7 @@ function renderProducts(products) {
                 price: Number(el.dataset.price),
                 image: el.dataset.img
             });
-            
+
             // Visual feedback
             const originalText = el.innerHTML;
             el.innerHTML = '<i class="fa-solid fa-check"></i> تمت الإضافة';
@@ -81,7 +81,7 @@ filterBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
         filterBtns.forEach(b => b.classList.remove('active'));
         e.target.classList.add('active');
-        
+
         const filter = e.target.getAttribute('data-filter');
         if (filter === 'all') {
             renderProducts(allProducts);
@@ -103,7 +103,7 @@ const goToCheckoutBtn = document.getElementById('goToCheckoutBtn');
 
 cartFloatBtn.addEventListener('click', () => cartModal.classList.add('active'));
 closeCartBtn.addEventListener('click', () => cartModal.classList.remove('active'));
-cartModal.addEventListener('click', (e) => { if(e.target === cartModal) cartModal.classList.remove('active'); });
+cartModal.addEventListener('click', (e) => { if (e.target === cartModal) cartModal.classList.remove('active'); });
 
 function addToCart(product) {
     const existing = cart.find(item => item.id === product.id);
@@ -117,7 +117,7 @@ function addToCart(product) {
 }
 
 // Global functions for cart UI manipulation
-window.updateQty = function(id, delta) {
+window.updateQty = function (id, delta) {
     const item = cart.find(i => i.id === id);
     if (item) {
         item.quantity += delta;
@@ -129,7 +129,7 @@ window.updateQty = function(id, delta) {
     }
 };
 
-window.removeFromCart = function(id) {
+window.removeFromCart = function (id) {
     cart = cart.filter(item => item.id !== id);
     saveCart();
     updateCartUI();
@@ -142,11 +142,11 @@ function saveCart() {
 function updateCartUI() {
     let totalItems = 0;
     let totalPrice = 0;
-    
+
     // Update Badge
     cart.forEach(item => totalItems += item.quantity);
     cartBadge.textContent = totalItems;
-    
+
     if (cart.length === 0) {
         cartItemsContainer.innerHTML = '<p style="text-align: center; color: var(--text-gray); margin-top: 50px;">عربة التسوق فارغة.</p>';
         cartTotalVal.textContent = '0 ج.م';
@@ -154,10 +154,10 @@ function updateCartUI() {
         goToCheckoutBtn.style.opacity = '0.5';
         return;
     }
-    
+
     goToCheckoutBtn.disabled = false;
     goToCheckoutBtn.style.opacity = '1';
-    
+
     let html = '';
     cart.forEach(item => {
         totalPrice += item.price * item.quantity;
@@ -177,7 +177,7 @@ function updateCartUI() {
             </div>
         `;
     });
-    
+
     cartItemsContainer.innerHTML = html;
     cartTotalVal.textContent = `${totalPrice} ج.م`;
 }
@@ -209,13 +209,13 @@ const inlineAlertBox = document.getElementById('inlineAlertBox');
 
 submitInlineOrderBtn.addEventListener('click', async (e) => {
     e.preventDefault();
-    
+
     if (!inlineForm.reportValidity()) return;
-    
+
     inlineBtnText.style.display = 'none';
     inlineSpinner.style.display = 'inline-block';
     submitInlineOrderBtn.disabled = true;
-    
+
     let orderDetailsText = "طلب سريع من المتجر:\n";
     let calculatedTotal = 0;
     cart.forEach(item => {
@@ -223,7 +223,7 @@ submitInlineOrderBtn.addEventListener('click', async (e) => {
         calculatedTotal += (item.price * item.quantity);
     });
     orderDetailsText += `\nالإجمالي التقريبي: ${calculatedTotal} ج.م\n`;
-    
+
     const orderData = {
         name: document.getElementById('inlineName').value,
         phone: document.getElementById('inlinePhone').value,
@@ -234,20 +234,20 @@ submitInlineOrderBtn.addEventListener('click', async (e) => {
         status: 'new',
         createdAt: new Date()
     };
-    
+
     try {
         await addDoc(collection(db, "orders"), orderData);
-        
+
         inlineAlertBox.textContent = 'تم إرسال طلبك بنجاح! السلة تفريغ...';
         inlineAlertBox.style.display = 'block';
         inlineAlertBox.style.background = 'rgba(5, 150, 105, 0.1)';
         inlineAlertBox.style.color = 'var(--success-color)';
-        
+
         cart = [];
         saveCart();
         updateCartUI();
         inlineForm.reset();
-        
+
         setTimeout(() => {
             cartModal.classList.remove('active');
             document.getElementById('backToCartBtn').click(); // Reset the view behind the scenes
@@ -256,14 +256,14 @@ submitInlineOrderBtn.addEventListener('click', async (e) => {
             inlineSpinner.style.display = 'none';
             submitInlineOrderBtn.disabled = false;
         }, 2500);
-        
+
     } catch (error) {
         console.error("Order error: ", error);
         inlineAlertBox.textContent = 'حدث خطأ أثناء الاتصال. حاول مجدداً.';
         inlineAlertBox.style.display = 'block';
         inlineAlertBox.style.background = 'rgba(220, 38, 38, 0.1)';
         inlineAlertBox.style.color = 'var(--error-color)';
-        
+
         inlineBtnText.style.display = 'inline-block';
         inlineSpinner.style.display = 'none';
         submitInlineOrderBtn.disabled = false;
