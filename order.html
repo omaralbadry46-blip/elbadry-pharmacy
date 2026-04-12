@@ -26,10 +26,11 @@
                     <span class="en-logo">EL BADRY PHARMACY</span>
                 </a>
             </div>
-            <nav>
+            <nav id="nav-links">
                 <a href="index.html">الرئيسية</a>
+                <a href="store.html">المتجر</a>
                 <a href="index.html#contact">تواصل معنا</a>
-                <a href="order.html" class="active btn-primary pulse-btn">اطلب الآن</a>
+                <a href="order.html" class="active btn-primary pulse-btn">اطلب وصفة</a>
             </nav>
         </div>
     </header>
@@ -38,7 +39,10 @@
         <div class="container">
             <div class="order-header text-center">
                 <h2>أرسل طلبك إلينا <span>بكل سهولة</span></h2>
-                <p>يرجى تعبئة البيانات أدناه وكتابة الأدوية المطلوبة وسنقوم بتجهيزها لك وتوصيلها فوراً.</p>
+                <div style="margin-top: 20px; margin-bottom: 30px;">
+                    <a href="store.html" class="btn-secondary" style="font-size: 16px; padding: 10px 25px;">أو تصفح منتجات المتجر مباشرة</a>
+                </div>
+                <p>يرجى تعبئة البيانات أدناه وكتابة الأدوية المطلوبة، أو إرفاق صورة الروشتة وسنقوم بتجهيزها وتوصيلها فوراً.</p>
             </div>
 
             <div class="form-wrapper glass-card form-anim">
@@ -65,11 +69,12 @@
                     </div>
 
                     <div class="input-group">
-                        <label for="orderDetails">الطلب (الروشتة، الأدوية أو الاستفسار) <span
+                        <label for="orderDetails">الطلب (الأدوية أو الاستفسار) <span
                                 class="required">*</span></label>
-                        <textarea id="orderDetails" name="orderDetails" rows="5" required
+                        <textarea id="orderDetails" name="orderDetails" rows="4" required
                             placeholder="اكتب أسماء الأدوية بوضوح أو اترك استفسارك هنا..."></textarea>
                     </div>
+
 
                     <button type="submit" class="btn-primary btn-submit btn-large" id="submitBtn">
                         <span class="btn-text">
@@ -93,7 +98,7 @@
         </div>
     </main>
 
-    <footer>
+    <footer id="contact">
         <div class="container footer-content">
             <div class="footer-logo">
                 <h3>صيدلية <span>البدري</span></h3>
@@ -124,7 +129,7 @@
             <div class="footer-bottom">
                 <p>&copy; 2024 صيدلية البدري. جميع الحقوق محفوظة.</p>
                 <p style="margin-top: 10px; font-size: 0.85em; opacity: 0.8; letter-spacing: 1px;">
-                    DEVELOP BY <a href="https://wa.me/201040981238" target="_blank"
+                    MADE WITH <a href="https://wa.me/201040981238" target="_blank"
                         style="color: #fff; font-weight: 800; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 2px; transition: all 0.3s;"
                         onmouseover="this.style.borderBottom='1px solid #fff'; this.style.color='var(--primary-light)';"
                         onmouseout="this.style.borderBottom='1px solid rgba(255,255,255,0.3)'; this.style.color='#fff';">OMAR
@@ -134,7 +139,7 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script type="module" src="js/order.js"></script>
 </body>
 
 </html>
