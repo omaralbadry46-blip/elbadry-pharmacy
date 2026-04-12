@@ -1,5 +1,5 @@
 import { db } from './firebase-config.js';
-import { collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { collection, query, orderBy, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 const productsGrid = document.getElementById('productsGrid');
 const filterBtns = document.querySelectorAll('.filter-btn');
@@ -182,9 +182,92 @@ function updateCartUI() {
     cartTotalVal.textContent = `${totalPrice} ج.م`;
 }
 
-// Redirect to Order/Checkout
+// New Inline Checkout Logic
+const cartCheckoutContainer = document.getElementById('cartCheckoutContainer');
+const cartStandardBtns = document.getElementById('cartStandardBtns');
+const cartCheckoutBtns = document.getElementById('cartCheckoutBtns');
+
 goToCheckoutBtn.addEventListener('click', () => {
-    window.location.href = 'order.html?from=cart';
+    cartItemsContainer.style.display = 'none';
+    cartCheckoutContainer.style.display = 'block';
+    cartStandardBtns.style.display = 'none';
+    cartCheckoutBtns.style.display = 'flex';
+});
+
+document.getElementById('backToCartBtn').addEventListener('click', () => {
+    cartCheckoutContainer.style.display = 'none';
+    cartItemsContainer.style.display = 'block';
+    cartCheckoutBtns.style.display = 'none';
+    cartStandardBtns.style.display = 'block';
+});
+
+const submitInlineOrderBtn = document.getElementById('submitInlineOrderBtn');
+const inlineForm = document.getElementById('inlineCheckoutForm');
+const inlineSpinner = document.getElementById('inlineSpinner');
+const inlineBtnText = document.getElementById('inlineBtnText');
+const inlineAlertBox = document.getElementById('inlineAlertBox');
+
+submitInlineOrderBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    
+    if (!inlineForm.reportValidity()) return;
+    
+    inlineBtnText.style.display = 'none';
+    inlineSpinner.style.display = 'inline-block';
+    submitInlineOrderBtn.disabled = true;
+    
+    let orderDetailsText = "طلب سريع من المتجر:\n";
+    let calculatedTotal = 0;
+    cart.forEach(item => {
+        orderDetailsText += `- ${item.name} | الكمية: ${item.quantity} | السعر: ${item.price} ج.م\n`;
+        calculatedTotal += (item.price * item.quantity);
+    });
+    orderDetailsText += `\nالإجمالي التقريبي: ${calculatedTotal} ج.م\n`;
+    
+    const orderData = {
+        name: document.getElementById('inlineName').value,
+        phone: document.getElementById('inlinePhone').value,
+        address: document.getElementById('inlineAddress').value,
+        orderDetails: orderDetailsText,
+        items: cart,
+        total: calculatedTotal,
+        status: 'new',
+        createdAt: new Date()
+    };
+    
+    try {
+        await addDoc(collection(db, "orders"), orderData);
+        
+        inlineAlertBox.textContent = 'تم إرسال طلبك بنجاح! السلة تفريغ...';
+        inlineAlertBox.style.display = 'block';
+        inlineAlertBox.style.background = 'rgba(5, 150, 105, 0.1)';
+        inlineAlertBox.style.color = 'var(--success-color)';
+        
+        cart = [];
+        saveCart();
+        updateCartUI();
+        inlineForm.reset();
+        
+        setTimeout(() => {
+            cartModal.classList.remove('active');
+            document.getElementById('backToCartBtn').click(); // Reset the view behind the scenes
+            inlineAlertBox.style.display = 'none';
+            inlineBtnText.style.display = 'inline-block';
+            inlineSpinner.style.display = 'none';
+            submitInlineOrderBtn.disabled = false;
+        }, 2500);
+        
+    } catch (error) {
+        console.error("Order error: ", error);
+        inlineAlertBox.textContent = 'حدث خطأ أثناء الاتصال. حاول مجدداً.';
+        inlineAlertBox.style.display = 'block';
+        inlineAlertBox.style.background = 'rgba(220, 38, 38, 0.1)';
+        inlineAlertBox.style.color = 'var(--error-color)';
+        
+        inlineBtnText.style.display = 'inline-block';
+        inlineSpinner.style.display = 'none';
+        submitInlineOrderBtn.disabled = false;
+    }
 });
 
 // Initialization
