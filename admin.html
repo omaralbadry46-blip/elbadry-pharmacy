@@ -1,45 +1,27 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تسجيل الدخول - إدارة صيدلية البدري</title>
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap"
+        rel="stylesheet">
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Main CSS -->
-    <link rel="stylesheet" href="style.css">
-    
-    <style>
-        .admin-login-wrapper {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, var(--bg-color) 0%, #e0f2f1 100%);
-        }
-        .login-card {
-            max-width: 450px;
-            width: 100%;
-            padding: 50px 40px;
-        }
-        .login-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .login-header i {
-            font-size: 50px;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Admin CSS -->
+    <link rel="stylesheet" href="css/admin.css">
 </head>
+
 <body>
     <div class="admin-login-wrapper">
         <div class="glass-card login-card form-anim">
@@ -51,25 +33,27 @@
                 </div>
                 <p style="margin-top: 15px; color: var(--text-gray); font-weight: 700;">لوحة تحكم الإدارة</p>
             </div>
-            
+
             <form id="loginForm">
                 <div class="input-group">
                     <label for="email">البريد الإلكتروني</label>
                     <input type="email" id="email" required placeholder="admin@elbadry.com">
                 </div>
-                
+
                 <div class="input-group">
                     <label for="password">كلمة المرور</label>
                     <input type="password" id="password" required placeholder="••••••••">
                 </div>
-                
+
                 <div id="loginAlert" class="alert hidden"></div>
-                
+
                 <button type="submit" class="btn-primary btn-submit" id="submitBtn">
                     تسجيل الدخول <i class="fa-solid fa-arrow-right-to-bracket"></i>
                 </button>
                 <div style="text-align:center; margin-top:15px">
-                    <a href="index.html" style="color:var(--text-gray); font-size:14px; text-decoration:underline;">العودة للموقع الرئيسي</a>
+                    <a href="index.html"
+                        style="color:var(--text-gray); font-size:14px; text-decoration:underline;">العودة للموقع
+                        الرئيسي</a>
                 </div>
             </form>
         </div>
@@ -77,4 +61,5 @@
 
     <script type="module" src="js/admin.js"></script>
 </body>
+
 </html>
