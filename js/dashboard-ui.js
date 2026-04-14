@@ -25,7 +25,7 @@
         openBtn.addEventListener('click', () => {
             document.getElementById('productForm').reset();
             document.getElementById('productId').value = '';
-            document.getElementById('modalTitle').textContent = 'ط¥ط¶ط§ظپط© ظ…ظ†طھط¬ ط¬ط¯ظٹط¯';
+            document.getElementById('modalTitle').textContent = 'إضافة منتج جديد';
             modal.classList.add('active');
         });
         
