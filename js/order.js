@@ -10,6 +10,35 @@ const orderDetailsInput = document.getElementById('orderDetails');
 const btnText = document.querySelector('.btn-text');
 const btnLoader = document.querySelector('.btn-loader');
 
+const prescriptionImageInput = document.getElementById('prescriptionImage');
+const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+const imagePreview = document.getElementById('imagePreview');
+const removeImageBtn = document.getElementById('removeImageBtn');
+
+let selectedImageFile = null;
+
+if (prescriptionImageInput) {
+    prescriptionImageInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            selectedImageFile = file;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                imagePreviewContainer.style.display = 'flex';
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    removeImageBtn.addEventListener('click', () => {
+        prescriptionImageInput.value = '';
+        selectedImageFile = null;
+        imagePreviewContainer.style.display = 'none';
+        imagePreview.src = '';
+    });
+}
+
 // Check URL Params and LocalStorage Cart
 const urlParams = new URLSearchParams(window.location.search);
 let cart = JSON.parse(localStorage.getItem('elbadry_cart')) || [];
@@ -35,14 +64,28 @@ orderForm.addEventListener('submit', async (e) => {
     
     const name = document.getElementById('name').value;
     const phone = document.getElementById('phone').value;
+    const governorate = document.getElementById('governorate').value;
     const address = document.getElementById('address').value || 'غير محدد';
     const orderDetails = orderDetailsInput.value;
+    
+    let prescriptionUrl = null;
+    if (selectedImageFile) {
+        try {
+            const storageRef = ref(storage, 'prescriptions/' + Date.now() + '_' + selectedImageFile.name);
+            const snapshot = await uploadBytes(storageRef, selectedImageFile);
+            prescriptionUrl = await getDownloadURL(snapshot.ref);
+        } catch (error) {
+            console.error("Error uploading image: ", error);
+        }
+    }
     
     const orderData = {
         name,
         phone,
+        governorate,
         address,
         orderDetails,
+        prescriptionUrl,
         items: cart,
         total: cartTotal,
         status: 'new',

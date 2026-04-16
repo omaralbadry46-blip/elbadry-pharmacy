@@ -63,6 +63,40 @@
                     </div>
 
                     <div class="input-group">
+                        <label for="governorate">المحافظة <span class="required">*</span></label>
+                        <select id="governorate" name="governorate" required style="width: 100%; padding: 14px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: white; transition: border-color 0.3s; color: var(--text-color);">
+                            <option value="">-- اختر المحافظة --</option>
+                            <option value="القاهرة">القاهرة</option>
+                            <option value="الإسكندرية">الإسكندرية</option>
+                            <option value="الجيزة">الجيزة</option>
+                            <option value="القليوبية">القليوبية</option>
+                            <option value="بورسعيد">بورسعيد</option>
+                            <option value="السويس">السويس</option>
+                            <option value="الإسماعيلية">الإسماعيلية</option>
+                            <option value="الدقهلية">الدقهلية</option>
+                            <option value="الشرقية">الشرقية</option>
+                            <option value="الغربية">الغربية</option>
+                            <option value="المنوفية">المنوفية</option>
+                            <option value="البحيرة">البحيرة</option>
+                            <option value="دمياط">دمياط</option>
+                            <option value="كفر الشيخ">كفر الشيخ</option>
+                            <option value="الفيوم">الفيوم</option>
+                            <option value="بني سويف">بني سويف</option>
+                            <option value="المنيا">المنيا</option>
+                            <option value="أسيوط">أسيوط</option>
+                            <option value="سوهاج">سوهاج</option>
+                            <option value="قنا">قنا</option>
+                            <option value="الأقصر">الأقصر</option>
+                            <option value="أسوان">أسوان</option>
+                            <option value="البحر الأحمر">البحر الأحمر</option>
+                            <option value="الوادي الجديد">الوادي الجديد</option>
+                            <option value="مطروح">مطروح</option>
+                            <option value="شمال سيناء">شمال سيناء</option>
+                            <option value="جنوب سيناء">جنوب سيناء</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
                         <label for="address">العنوان بالتفصيل <span class="required">*</span></label>
                         <textarea id="address" name="address" rows="2" required
                             placeholder="المنطقة، الشارع، رقم العمارة / الشقة"></textarea>
@@ -73,6 +107,21 @@
                                 class="required">*</span></label>
                         <textarea id="orderDetails" name="orderDetails" rows="4" required
                             placeholder="اكتب أسماء الأدوية بوضوح أو اترك استفسارك هنا..."></textarea>
+                    </div>
+
+                    <div class="input-group" style="position: relative;">
+                        <label for="prescriptionImage" style="cursor: pointer; display: inline-flex; align-items: center; gap: 8px; color: var(--primary-color); font-weight: bold; background: rgba(11, 128, 122, 0.1); padding: 12px 15px; border-radius: 8px; transition: all 0.3s; border: 1px dashed var(--primary-color);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            <span>إرفاق صورة طبية / روشتة (اختياري)</span>
+                        </label>
+                        <input type="file" id="prescriptionImage" accept="image/*" style="opacity: 0; position: absolute; z-index: -1;">
+                        <div id="imagePreviewContainer" style="display: none; margin-top: 15px; align-items: center; gap: 15px; background: #f8f9fa; padding: 10px; border-radius: 10px; border: 1px solid var(--border-color);">
+                            <img id="imagePreview" src="" alt="المعاينة" style="max-height: 80px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                            <button type="button" id="removeImageBtn" style="background: var(--error-color); color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 5px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                حذف الصورة
+                            </button>
+                        </div>
                     </div>
 
 

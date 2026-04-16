@@ -1,5 +1,5 @@
 import { db } from './firebase-config.js';
-import { collection, query, orderBy, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { collection, query, orderBy, getDocs, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 const productsGrid = document.getElementById('productsGrid');
 const filterBtns = document.querySelectorAll('.filter-btn');
@@ -76,21 +76,39 @@ function renderProducts(products) {
     });
 }
 
-// Filtering
-filterBtns.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        filterBtns.forEach(b => b.classList.remove('active'));
-        e.target.classList.add('active');
+// Filtering dynamically from Firebase Categories
+const storeFiltersContainer = document.getElementById('storeFiltersContainer');
 
-        const filter = e.target.getAttribute('data-filter');
-        if (filter === 'all') {
-            renderProducts(allProducts);
-        } else {
-            const filtered = allProducts.filter(p => p.category.includes(filter) || filter.includes(p.category));
-            renderProducts(filtered);
-        }
+if (storeFiltersContainer) {
+    onSnapshot(query(collection(db, 'categories'), orderBy('createdAt', 'asc')), (snapshot) => {
+        storeFiltersContainer.innerHTML = '<button class="filter-btn active" data-filter="all">الكل</button>';
+        
+        snapshot.forEach(docSnap => {
+            const cat = docSnap.data();
+            const btn = document.createElement('button');
+            btn.className = 'filter-btn';
+            btn.setAttribute('data-filter', cat.name);
+            btn.textContent = cat.name;
+            storeFiltersContainer.appendChild(btn);
+        });
+
+        // Re-attach listeners to new filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+
+                const filter = e.target.getAttribute('data-filter');
+                if (filter === 'all') {
+                    renderProducts(allProducts);
+                } else {
+                    const filtered = allProducts.filter(p => p.category.includes(filter) || filter.includes(p.category));
+                    renderProducts(filtered);
+                }
+            });
+        });
     });
-});
+}
 
 // ------------- Cart Logic -------------
 const cartFloatBtn = document.getElementById('cartFloatBtn');
