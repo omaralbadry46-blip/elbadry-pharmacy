@@ -245,6 +245,7 @@ submitInlineOrderBtn.addEventListener('click', async (e) => {
     const orderData = {
         name: document.getElementById('inlineName').value,
         phone: document.getElementById('inlinePhone').value,
+        governorate: document.getElementById('inlineGovernorate').value,
         address: document.getElementById('inlineAddress').value,
         orderDetails: orderDetailsText,
         items: cart,

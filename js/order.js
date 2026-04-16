@@ -111,9 +111,17 @@ orderForm.addEventListener('submit', async (e) => {
         localStorage.removeItem('elbadry_cart');
         orderForm.reset();
         
-        // Redirect to Home after 3 seconds
+        // Clear image preview
+        selectedImageFile = null;
+        if(prescriptionImageInput) prescriptionImageInput.value = '';
+        imagePreviewContainer.style.display = 'none';
+        imagePreview.src = '';
+        
+        // Reset UI Button after 3 seconds
         setTimeout(() => {
-            window.location.href = 'index.html';
+            btnText.classList.remove('hidden');
+            btnLoader.classList.add('hidden');
+            submitBtn.disabled = false;
         }, 3000);
         
     } catch (error) {
