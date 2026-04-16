@@ -104,7 +104,7 @@
                             الهاتف <span style="color:var(--error-color)">*</span></label>
                         <input type="tel" id="inlinePhone" required
                             style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; text-align:right;"
-                            dir="ltr" placeholder="01X XXXX XXXX">
+                            dir="ltr" placeholder="01X XXXX XXXX" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     </div>
                     <div style="margin-bottom: 15px;">
                         <label style="display:block; margin-bottom: 5px; font-weight:bold; color:var(--text-gray); font-size:14px;">المحافظة <span style="color:var(--error-color)">*</span></label>
