@@ -80,7 +80,7 @@ orderForm.addEventListener('submit', async (e) => {
             prescriptionUrl = publicUrlData.publicUrl;
         } catch (error) {
             console.error("Error uploading image to Supabase: ", error);
-            alertBox.textContent = 'فشل رفع الصورة! تأكد من إعدادات Supabase وأن الـ Bucket اسمه pharmacy_images.';
+            alertBox.textContent = 'نعتذر، حدثت مشكلة أثناء رفع الصورة. يرجى التواصل معنا لحل المشكله.';
             alertBox.className = 'alert alert-error';
             alertBox.classList.remove('hidden');
             
