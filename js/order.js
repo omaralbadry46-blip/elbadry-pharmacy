@@ -76,6 +76,14 @@ orderForm.addEventListener('submit', async (e) => {
             prescriptionUrl = await getDownloadURL(snapshot.ref);
         } catch (error) {
             console.error("Error uploading image: ", error);
+            alertBox.textContent = 'فشل رفع الصورة! يرجى تحديث صلاحيات (Rules) في Firebase Storage لتسمح برفع الصور.';
+            alertBox.className = 'alert alert-error';
+            alertBox.classList.remove('hidden');
+            
+            btnText.classList.remove('hidden');
+            btnLoader.classList.add('hidden');
+            submitBtn.disabled = false;
+            return; // Stop submission entirely since upload failed
         }
     }
     
