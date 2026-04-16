@@ -1,10 +1,10 @@
-// إعدادات اتصال Supabase
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-// 1. رابط المشروع الخاص بك (استنتجته من الرابط اللي في الصورة)
+// 1. رابط المشروع
 const SUPABASE_URL = 'https://xdipeuppyusmxmnregwm.supabase.co';
 
-// 2. المفتاح العام (Publishable key) - ستحتاج لنسخه من الصفحة التي قمت بتصويرها ولصقه هنا بدلاً من هذه الجملة
+// 2. المفتاح العام
 const SUPABASE_KEY = 'sb_publishable_dFFoaBHCOWG2j552pYyP3g_wfmi1xsp';
 
 // تهيئة العميل
-export const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
