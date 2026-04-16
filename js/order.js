@@ -1,6 +1,6 @@
-import { db, storage } from './firebase-config.js';
+import { db } from './firebase-config.js';
 import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
+import { supabase } from './supabase-config.js';
 
 const orderForm = document.getElementById('orderForm');
 const submitBtn = document.getElementById('submitBtn');
@@ -71,12 +71,16 @@ orderForm.addEventListener('submit', async (e) => {
     let prescriptionUrl = null;
     if (selectedImageFile) {
         try {
-            const storageRef = ref(storage, 'prescriptions/' + Date.now() + '_' + selectedImageFile.name);
-            const snapshot = await uploadBytes(storageRef, selectedImageFile);
-            prescriptionUrl = await getDownloadURL(snapshot.ref);
+            const fileName = Date.now() + '_' + selectedImageFile.name;
+            const { data, error } = await supabase.storage.from('pharmacy_images').upload('prescriptions/' + fileName, selectedImageFile);
+            
+            if (error) throw error;
+            
+            const { data: publicUrlData } = supabase.storage.from('pharmacy_images').getPublicUrl('prescriptions/' + fileName);
+            prescriptionUrl = publicUrlData.publicUrl;
         } catch (error) {
-            console.error("Error uploading image: ", error);
-            alertBox.textContent = 'فشل رفع الصورة! يرجى تحديث صلاحيات (Rules) في Firebase Storage لتسمح برفع الصور.';
+            console.error("Error uploading image to Supabase: ", error);
+            alertBox.textContent = 'فشل رفع الصورة! تأكد من إعدادات Supabase وأن الـ Bucket اسمه pharmacy_images.';
             alertBox.className = 'alert alert-error';
             alertBox.classList.remove('hidden');
             
