@@ -220,12 +220,31 @@ function updateCartDeliveryUI(baseTotal = null) {
     const cartDeliveryVal = document.getElementById('cartDeliveryVal');
     const cartTotalVal = document.getElementById('cartTotalVal');
     const inlineGov = document.getElementById('inlineGovernorate');
+    const inlineRegionGroup = document.getElementById('inlineRegionGroup');
+    const inlineRegionSelect = document.getElementById('inlineRegionSelect');
 
     if (!cartItemsTotalVal) return;
 
     cartItemsTotalVal.textContent = `${currentTotal} ج.م`;
 
-    const selectedGov = inlineGov ? inlineGov.value : '';
+    let selectedGov = inlineGov ? inlineGov.value : '';
+    
+    if (selectedGov === 'الشرقية') {
+        if (inlineRegionGroup) inlineRegionGroup.style.display = 'block';
+        if (inlineRegionSelect) inlineRegionSelect.required = true;
+        
+        if (inlineRegionSelect && inlineRegionSelect.value === 'بلبيس') {
+            selectedGov = 'الشرقية (بلبيس)';
+        } else if (inlineRegionSelect && inlineRegionSelect.value === 'مناطق أخرى') {
+            selectedGov = 'الشرقية (مناطق أخرى)';
+        } else {
+            selectedGov = null; 
+        }
+    } else {
+        if (inlineRegionGroup) inlineRegionGroup.style.display = 'none';
+        if (inlineRegionSelect) inlineRegionSelect.required = false;
+    }
+
     let deliveryFee = 0;
     
     if (selectedGov && deliveryFees[selectedGov] !== undefined) {
@@ -249,6 +268,12 @@ function updateCartDeliveryUI(baseTotal = null) {
 const inlineGovernorate = document.getElementById('inlineGovernorate');
 if (inlineGovernorate) {
     inlineGovernorate.addEventListener('change', () => {
+        updateCartDeliveryUI();
+    });
+}
+const inlineRegionSelect = document.getElementById('inlineRegionSelect');
+if (inlineRegionSelect) {
+    inlineRegionSelect.addEventListener('change', () => {
         updateCartDeliveryUI();
     });
 }
@@ -296,7 +321,13 @@ submitInlineOrderBtn.addEventListener('click', async (e) => {
     });
     orderDetailsText += `\nالإجمالي التقريبي: ${calculatedTotal} ج.م\n`;
 
-    const selectedGov = document.getElementById('inlineGovernorate').value;
+    let selectedGov = document.getElementById('inlineGovernorate').value;
+    const inlineRegionSelectElt = document.getElementById('inlineRegionSelect');
+    
+    if (selectedGov === 'الشرقية' && inlineRegionSelectElt && inlineRegionSelectElt.value) {
+        selectedGov = `الشرقية (${inlineRegionSelectElt.value})`;
+    }
+    
     const deliveryFee = deliveryFees[selectedGov] !== undefined ? deliveryFees[selectedGov] : (selectedGov ? 50 : 0);
     const finalTotal = calculatedTotal + deliveryFee;
 

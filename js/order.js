@@ -56,13 +56,32 @@ onSnapshot(doc(db, 'settings', 'delivery'), (docSnap) => {
 const governorateSelect = document.getElementById('governorate');
 const orderDeliveryInfo = document.getElementById('orderDeliveryInfo');
 const orderDeliveryFeeVal = document.getElementById('orderDeliveryFeeVal');
+const regionGroup = document.getElementById('regionGroup');
+const regionSelect = document.getElementById('regionSelect');
 
 let currentDeliveryFee = 0;
 
 function updateDeliveryFeeUI() {
     if (!governorateSelect || !orderDeliveryInfo) return;
     
-    const selectedGov = governorateSelect.value;
+    let selectedGov = governorateSelect.value;
+
+    if (selectedGov === 'الشرقية') {
+        if(regionGroup) regionGroup.style.display = 'block';
+        if(regionSelect) regionSelect.required = true;
+        
+        if (regionSelect && regionSelect.value === 'بلبيس') {
+            selectedGov = 'الشرقية (بلبيس)';
+        } else if (regionSelect && regionSelect.value === 'مناطق أخرى') {
+            selectedGov = 'الشرقية (مناطق أخرى)';
+        } else {
+            selectedGov = null;
+        }
+    } else {
+        if(regionGroup) regionGroup.style.display = 'none';
+        if(regionSelect) regionSelect.required = false;
+    }
+    
     if (selectedGov) {
         currentDeliveryFee = deliveryFees[selectedGov] !== undefined ? deliveryFees[selectedGov] : 50;
         orderDeliveryFeeVal.textContent = `${currentDeliveryFee} ج.م`;
@@ -76,6 +95,10 @@ function updateDeliveryFeeUI() {
 
 if (governorateSelect) {
     governorateSelect.addEventListener('change', updateDeliveryFeeUI);
+}
+
+if (regionSelect) {
+    regionSelect.addEventListener('change', updateDeliveryFeeUI);
 }
 
 if (urlParams.get('from') === 'cart' && cart.length > 0) {
@@ -98,7 +121,12 @@ orderForm.addEventListener('submit', async (e) => {
     
     const name = document.getElementById('name').value;
     const phone = document.getElementById('phone').value;
-    const governorate = document.getElementById('governorate').value;
+    let governorate = document.getElementById('governorate').value;
+    const region = regionSelect ? regionSelect.value : '';
+    if (governorate === 'الشرقية' && region) {
+        governorate = `الشرقية (${region})`;
+    }
+    
     const address = document.getElementById('address').value || 'غير محدد';
     const orderDetails = orderDetailsInput.value;
     
