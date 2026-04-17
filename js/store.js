@@ -187,6 +187,11 @@ function updateCartUI() {
         cartTotalVal.textContent = '0 ج.م';
         goToCheckoutBtn.disabled = true;
         goToCheckoutBtn.style.opacity = '0.5';
+        
+        updateCartDeliveryUI(0);
+        if (typeof updateGridActionsUI === 'function') {
+            updateGridActionsUI();
+        }
         return;
     }
 
