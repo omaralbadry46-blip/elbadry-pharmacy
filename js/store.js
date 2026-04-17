@@ -367,24 +367,35 @@ submitInlineOrderBtn.addEventListener('click', async (e) => {
     try {
         await addDoc(collection(db, "orders"), orderData);
 
-        inlineAlertBox.textContent = 'تم إرسال طلبك بنجاح! السلة تفريغ...';
-        inlineAlertBox.style.display = 'block';
-        inlineAlertBox.style.background = 'rgba(5, 150, 105, 0.1)';
-        inlineAlertBox.style.color = 'var(--success-color)';
-
-        cart = [];
-        saveCart();
-        updateCartUI();
-        inlineForm.reset();
-
-        setTimeout(() => {
+        inlineForm.style.display = 'none';
+        
+        const successDiv = document.createElement('div');
+        successDiv.id = "successOrderSummary";
+        successDiv.innerHTML = `
+            <div style="text-align: center; padding: 20px; animation: fadeIn 0.5s;">
+                <i class="fa-solid fa-circle-check" style="font-size: 50px; color: var(--success-color); margin-bottom: 15px;"></i>
+                <h3 style="color: var(--success-color); margin-bottom: 15px;">تم إنشاء الطلب بنجاح!</h3>
+                <div style="background: rgba(11, 128, 122, 0.05); padding: 15px; border-radius: 10px; text-align: right; border: 1px solid var(--border-color); margin-bottom: 20px; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${orderDetailsText.trim()}</div>
+                <button id="closeSuccessBtn" style="background: var(--primary-color); color: white; border: none; padding: 12px; border-radius: 10px; font-family: inherit; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; transition: background 0.3s;">إغلاق والعودة للمتجر</button>
+            </div>
+        `;
+        
+        cartCheckoutContainer.appendChild(successDiv);
+        
+        document.getElementById('closeSuccessBtn').addEventListener('click', () => {
+            cart = [];
+            saveCart();
+            updateCartUI();
+            inlineForm.reset();
+            inlineForm.style.display = 'block';
+            successDiv.remove();
+            
             cartModal.classList.remove('active');
-            document.getElementById('backToCartBtn').click(); // Reset the view behind the scenes
-            inlineAlertBox.style.display = 'none';
+            document.getElementById('backToCartBtn').click();
             inlineBtnText.style.display = 'inline-block';
             inlineSpinner.style.display = 'none';
             submitInlineOrderBtn.disabled = false;
-        }, 2500);
+        });
 
     } catch (error) {
         console.error("Order error: ", error);
