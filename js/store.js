@@ -369,6 +369,10 @@ submitInlineOrderBtn.addEventListener('click', async (e) => {
 
         inlineForm.style.display = 'none';
         
+        // Hide the footer containing the totals and action buttons
+        const cartFooter = document.querySelector('.cart-footer');
+        if (cartFooter) cartFooter.style.display = 'none';
+        
         const successDiv = document.createElement('div');
         successDiv.id = "successOrderSummary";
         successDiv.innerHTML = `
@@ -389,6 +393,8 @@ submitInlineOrderBtn.addEventListener('click', async (e) => {
             inlineForm.reset();
             inlineForm.style.display = 'block';
             successDiv.remove();
+            
+            if (cartFooter) cartFooter.style.display = 'block';
             
             cartModal.classList.remove('active');
             document.getElementById('backToCartBtn').click();
