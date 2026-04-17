@@ -52,36 +52,44 @@ function renderProducts(products) {
                 <div class="product-category">${prod.category}</div>
                 <h3 class="product-name">${prod.name}</h3>
                 <div class="product-price">${prod.price} ج.م</div>
-                <button class="add-to-cart-btn" data-id="${prod.id}" data-name="${prod.name.replace(/"/g, '&quot;')}" data-price="${prod.price}" data-img="${prod.image}">
-                    <i class="fa-solid fa-cart-plus"></i> أضف للعربة
-                </button>
+                <div id="product-action-${prod.id}" class="product-action-container" data-name="${prod.name.replace(/"/g, '&quot;')}" data-price="${prod.price}" data-img="${prod.image}">
+                </div>
             </div>
         `;
         productsGrid.appendChild(div);
     });
 
-    // Attach event listeners targeting dynamically created buttons
-    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const el = e.currentTarget;
-            addToCart({
-                id: el.dataset.id,
-                name: el.dataset.name,
-                price: Number(el.dataset.price),
-                image: el.dataset.img
-            });
+    updateGridActionsUI();
+}
 
-            // Visual feedback
-            const originalText = el.innerHTML;
-            el.innerHTML = '<i class="fa-solid fa-check"></i> تمت الإضافة';
-            el.style.background = 'var(--primary-color)';
-            el.style.color = 'white';
-            setTimeout(() => {
-                el.innerHTML = originalText;
-                el.style.background = 'rgba(11, 128, 122, 0.1)';
-                el.style.color = 'var(--primary-color)';
-            }, 1000);
-        });
+window.addFromGrid = function(id, name, price, img) {
+    addToCart({ id, name, price, image: img });
+};
+
+function updateGridActionsUI() {
+    const containers = document.querySelectorAll('.product-action-container');
+    containers.forEach(container => {
+        const id = container.id.replace('product-action-', '');
+        const itemInCart = cart.find(i => i.id === id);
+        
+        if (itemInCart) {
+            container.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(11, 128, 122, 0.1); border-radius: 8px; padding: 5px; margin-top: 10px;">
+                    <button style="width: 30px; height: 30px; border-radius: 5px; background: white; border: 1px solid var(--border-color); cursor: pointer; color: var(--primary-color);" onclick="updateQty('${id}', 1)"><i class="fa-solid fa-plus"></i></button>
+                    <span style="font-weight: bold; font-size: 16px; color: var(--text-color);">${itemInCart.quantity}</span>
+                    <button style="width: 30px; height: 30px; border-radius: 5px; background: white; border: 1px solid var(--border-color); cursor: pointer; color: var(--primary-color);" onclick="updateQty('${id}', -1)"><i class="fa-solid fa-minus"></i></button>
+                </div>
+            `;
+        } else {
+            const name = container.dataset.name.replace(/'/g, "\\'");
+            const img = container.dataset.img;
+            const price = container.dataset.price;
+            container.innerHTML = `
+                <button class="add-to-cart-btn" onclick="addFromGrid('${id}', '${name}', ${price}, '${img}')">
+                    <i class="fa-solid fa-cart-plus"></i> أضف للعربة
+                </button>
+            `;
+        }
     });
 }
 
@@ -207,6 +215,10 @@ function updateCartUI() {
 
     cartItemsContainer.innerHTML = html;
     updateCartDeliveryUI(totalPrice);
+    
+    if (typeof updateGridActionsUI === 'function') {
+        updateGridActionsUI();
+    }
 }
 
 function updateCartDeliveryUI(baseTotal = null) {
