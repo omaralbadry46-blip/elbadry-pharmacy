@@ -1,10 +1,19 @@
 import { db } from './firebase-config.js';
-import { collection, query, orderBy, getDocs, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { collection, query, orderBy, getDocs, addDoc, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 const productsGrid = document.getElementById('productsGrid');
 const filterBtns = document.querySelectorAll('.filter-btn');
 
 let allProducts = [];
+// Delivery fees state
+let deliveryFees = {};
+onSnapshot(doc(db, 'settings', 'delivery'), (docSnap) => {
+    if (docSnap.exists()) {
+        deliveryFees = docSnap.data().fees || {};
+        updateCartDeliveryUI();
+    }
+});
+
 let cart = JSON.parse(localStorage.getItem('elbadry_cart')) || [];
 
 // Load products
@@ -197,8 +206,53 @@ function updateCartUI() {
     });
 
     cartItemsContainer.innerHTML = html;
-    cartTotalVal.textContent = `${totalPrice} ج.م`;
+    updateCartDeliveryUI(totalPrice);
 }
+
+function updateCartDeliveryUI(baseTotal = null) {
+    let currentTotal = baseTotal;
+    if (currentTotal === null) {
+        currentTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    }
+    
+    const cartItemsTotalVal = document.getElementById('cartItemsTotalVal');
+    const cartDeliveryDiv = document.getElementById('cartDeliveryDiv');
+    const cartDeliveryVal = document.getElementById('cartDeliveryVal');
+    const cartTotalVal = document.getElementById('cartTotalVal');
+    const inlineGov = document.getElementById('inlineGovernorate');
+
+    if (!cartItemsTotalVal) return;
+
+    cartItemsTotalVal.textContent = `${currentTotal} ج.م`;
+
+    const selectedGov = inlineGov ? inlineGov.value : '';
+    let deliveryFee = 0;
+    
+    if (selectedGov && deliveryFees[selectedGov] !== undefined) {
+        deliveryFee = deliveryFees[selectedGov];
+        cartDeliveryDiv.style.display = 'flex';
+        cartDeliveryVal.textContent = `${deliveryFee} ج.م`;
+    } else if (selectedGov) {
+        // Fallback default
+        deliveryFee = 50; 
+        cartDeliveryDiv.style.display = 'flex';
+        cartDeliveryVal.textContent = `${deliveryFee} ج.م`;
+    } else {
+        cartDeliveryDiv.style.display = 'none';
+        cartDeliveryVal.textContent = `0 ج.م`;
+    }
+
+    cartTotalVal.textContent = `${currentTotal + deliveryFee} ج.م`;
+}
+
+// Add listener to update delivery when governorate changes
+const inlineGovernorate = document.getElementById('inlineGovernorate');
+if (inlineGovernorate) {
+    inlineGovernorate.addEventListener('change', () => {
+        updateCartDeliveryUI();
+    });
+}
+
 
 // New Inline Checkout Logic
 const cartCheckoutContainer = document.getElementById('cartCheckoutContainer');
@@ -242,14 +296,22 @@ submitInlineOrderBtn.addEventListener('click', async (e) => {
     });
     orderDetailsText += `\nالإجمالي التقريبي: ${calculatedTotal} ج.م\n`;
 
+    const selectedGov = document.getElementById('inlineGovernorate').value;
+    const deliveryFee = deliveryFees[selectedGov] !== undefined ? deliveryFees[selectedGov] : (selectedGov ? 50 : 0);
+    const finalTotal = calculatedTotal + deliveryFee;
+
+    orderDetailsText += `\nرسوم التوصيل (${selectedGov || 'غير محدد'}): ${deliveryFee} ج.م\n`;
+    orderDetailsText += `\nالإجمالي النهائي: ${finalTotal} ج.م\n`;
+
     const orderData = {
         name: document.getElementById('inlineName').value,
         phone: document.getElementById('inlinePhone').value,
-        governorate: document.getElementById('inlineGovernorate').value,
+        governorate: selectedGov,
         address: document.getElementById('inlineAddress').value,
         orderDetails: orderDetailsText,
+        deliveryFee: deliveryFee,
         items: cart,
-        total: calculatedTotal,
+        total: finalTotal,
         status: 'new',
         createdAt: new Date()
     };

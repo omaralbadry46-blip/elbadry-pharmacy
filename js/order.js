@@ -1,5 +1,5 @@
 import { db } from './firebase-config.js';
-import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { collection, addDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 import { supabase } from './supabase-config.js';
 
 const orderForm = document.getElementById('orderForm');
@@ -44,13 +44,47 @@ const urlParams = new URLSearchParams(window.location.search);
 let cart = JSON.parse(localStorage.getItem('elbadry_cart')) || [];
 let cartTotal = 0;
 
+// Delivery fees logic
+let deliveryFees = {};
+onSnapshot(doc(db, 'settings', 'delivery'), (docSnap) => {
+    if (docSnap.exists()) {
+        deliveryFees = docSnap.data().fees || {};
+        updateDeliveryFeeUI();
+    }
+});
+
+const governorateSelect = document.getElementById('governorate');
+const orderDeliveryInfo = document.getElementById('orderDeliveryInfo');
+const orderDeliveryFeeVal = document.getElementById('orderDeliveryFeeVal');
+
+let currentDeliveryFee = 0;
+
+function updateDeliveryFeeUI() {
+    if (!governorateSelect || !orderDeliveryInfo) return;
+    
+    const selectedGov = governorateSelect.value;
+    if (selectedGov) {
+        currentDeliveryFee = deliveryFees[selectedGov] !== undefined ? deliveryFees[selectedGov] : 50;
+        orderDeliveryFeeVal.textContent = `${currentDeliveryFee} ج.م`;
+        orderDeliveryInfo.style.display = 'block';
+    } else {
+        currentDeliveryFee = 0;
+        orderDeliveryInfo.style.display = 'none';
+        orderDeliveryFeeVal.textContent = `0 ج.م`;
+    }
+}
+
+if (governorateSelect) {
+    governorateSelect.addEventListener('change', updateDeliveryFeeUI);
+}
+
 if (urlParams.get('from') === 'cart' && cart.length > 0) {
     let orderDetailsText = "طلب من المتجر:\n";
     cart.forEach(item => {
         orderDetailsText += `- ${item.name} | الكمية: ${item.quantity} | السعر: ${item.price} ج.م\n`;
         cartTotal += (item.price * item.quantity);
     });
-    orderDetailsText += `\nالإجمالي التقريبي: ${cartTotal} ج.م\n`;
+    orderDetailsText += `\nإجمالي المنتجات: ${cartTotal} ج.م\n`;
     orderDetailsInput.value = orderDetailsText;
 }
 
@@ -91,15 +125,19 @@ orderForm.addEventListener('submit', async (e) => {
         }
     }
     
+    const finalOrderDetails = orderDetails + `\nرسوم التوصيل: ${currentDeliveryFee} ج.م`;
+    const finalTotal = cartTotal > 0 ? cartTotal + currentDeliveryFee : currentDeliveryFee;
+
     const orderData = {
         name,
         phone,
         governorate,
         address,
-        orderDetails,
+        orderDetails: finalOrderDetails,
+        deliveryFee: currentDeliveryFee,
         prescriptionUrl,
         items: cart,
-        total: cartTotal,
+        total: finalTotal,
         status: 'new',
         createdAt: new Date()
     };

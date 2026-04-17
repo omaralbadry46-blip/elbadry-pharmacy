@@ -1,6 +1,6 @@
 import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 import { supabase } from './supabase-config.js';
 
 // Check Auth state immediately
@@ -348,3 +348,70 @@ onSnapshot(query(ordersCol, orderBy('createdAt', 'desc')), (snapshot) => {
         allOrdersBody.innerHTML = `<tr><td colspan="6" style="text-align:center;">لا توجد طلبات حتى الآن.</td></tr>`;
     }
 });
+
+// Delivery Settings Logic
+const deliverySettingsDoc = doc(db, 'settings', 'delivery');
+const deliveryTableBody = document.querySelector('#deliveryTable tbody');
+const saveDeliveryBtn = document.getElementById('saveDeliveryBtn');
+
+const governoratesList = [
+    "القاهرة", "الإسكندرية", "الجيزة", "القليوبية", "بورسعيد", "السويس", "الإسماعيلية",
+    "الدقهلية", "الشرقية", "الغربية", "المنوفية", "البحيرة", "دمياط", "كفر الشيخ",
+    "الفيوم", "بني سويف", "المنيا", "أسيوط", "سوهاج", "قنا", "الأقصر", "أسوان",
+    "البحر الأحمر", "الوادي الجديد", "مطروح", "شمال سيناء", "جنوب سيناء"
+];
+
+let currentDeliveryFees = {};
+
+onSnapshot(deliverySettingsDoc, async (docSnap) => {
+    if (!docSnap.exists()) {
+        const defaultFees = {};
+        governoratesList.forEach(gov => defaultFees[gov] = 50);
+        await setDoc(deliverySettingsDoc, { fees: defaultFees }).catch(console.error);
+        return; 
+    }
+
+    currentDeliveryFees = docSnap.data().fees || {};
+    if(deliveryTableBody) {
+        deliveryTableBody.innerHTML = '';
+        
+        governoratesList.forEach(gov => {
+            const fee = currentDeliveryFees[gov] !== undefined ? currentDeliveryFees[gov] : 50;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>${gov}</strong></td>
+                <td>
+                    <input type="number" class="delivery-fee-input" data-gov="${gov}" value="${fee}" style="width: 100px; padding: 8px; border-radius: 8px; border: 1px solid var(--border-color); text-align: center;">
+                </td>
+            `;
+            deliveryTableBody.appendChild(tr);
+        });
+    }
+});
+
+if (saveDeliveryBtn) {
+    saveDeliveryBtn.addEventListener('click', async () => {
+        saveDeliveryBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...';
+        saveDeliveryBtn.disabled = true;
+        
+        const inputs = document.querySelectorAll('.delivery-fee-input');
+        const updatedFees = {};
+        inputs.forEach(input => {
+            updatedFees[input.dataset.gov] = Number(input.value) || 0;
+        });
+
+        try {
+            await setDoc(deliverySettingsDoc, { fees: updatedFees }, { merge: true });
+            saveDeliveryBtn.innerHTML = '<i class="fa-solid fa-check"></i> تم الحفظ';
+            setTimeout(() => {
+                saveDeliveryBtn.innerHTML = '<i class="fa-solid fa-save"></i> حفظ التعديلات';
+                saveDeliveryBtn.disabled = false;
+            }, 2000);
+        } catch (error) {
+            console.error("Error saving delivery fees: ", error);
+            alert("حدث خطأ أثناء حفظ رسوم التوصيل.");
+            saveDeliveryBtn.innerHTML = '<i class="fa-solid fa-save"></i> حفظ التعديلات';
+            saveDeliveryBtn.disabled = false;
+        }
+    });
+}

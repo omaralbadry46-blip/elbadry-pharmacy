@@ -35,6 +35,7 @@
                 <li><a href="#" class="active" data-target="dashboard"><i class="fa-solid fa-chart-pie"></i> الرئيسية</a></li>
                 <li><a href="#" data-target="products"><i class="fa-solid fa-pills"></i> المنتجات</a></li>
                 <li><a href="#" data-target="orders"><i class="fa-solid fa-cart-arrow-down"></i> الطلبات</a></li>
+                <li><a href="#" data-target="delivery"><i class="fa-solid fa-truck-fast"></i> رسوم التوصيل</a></li>
                 <li style="margin-top: auto;"><a href="#" id="logoutBtn" style="color: var(--error-color)"><i class="fa-solid fa-sign-out-alt"></i> تسجيل خروج</a></li>
             </ul>
         </aside>
@@ -142,6 +143,30 @@
                             </thead>
                             <tbody>
                                 <!-- Dynamic complete orders here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Delivery Section -->
+            <section id="delivery" class="dashboard-section">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>إدارة رسوم التوصيل</h3>
+                        <button class="btn-primary" id="saveDeliveryBtn" style="padding: 10px 20px;"><i class="fa-solid fa-save"></i> حفظ التعديلات</button>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table id="deliveryTable">
+                            <thead>
+                                <tr>
+                                    <th>المحافظة</th>
+                                    <th>رسوم التوصيل (ج.م)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamic rows here -->
+                                <tr><td colspan="2" style="text-align: center;">جاري التحميل...</td></tr>
                             </tbody>
                         </table>
                     </div>

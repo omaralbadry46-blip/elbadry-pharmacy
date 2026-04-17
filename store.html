@@ -154,8 +154,16 @@
             </div>
 
             <div class="cart-footer">
-                <div class="cart-total" id="cartTotalDiv">
-                    <span>الإجمالي:</span>
+                <div class="cart-total" id="cartItemsTotalDiv">
+                    <span style="font-size: 14px; font-weight: normal; color: var(--text-gray);">إجمالي المنتجات:</span>
+                    <span id="cartItemsTotalVal" style="font-size: 16px;">0 ج.م</span>
+                </div>
+                <div class="cart-total" id="cartDeliveryDiv" style="display: none; padding-top: 5px; margin-top: 5px;">
+                    <span style="font-size: 14px; font-weight: normal; color: var(--text-gray);">رسوم التوصيل:</span>
+                    <span id="cartDeliveryVal" style="font-size: 16px; color: var(--primary-color);">0 ج.م</span>
+                </div>
+                <div class="cart-total" id="cartTotalDiv" style="border-top: 1px dashed var(--border-color); padding-top: 10px; margin-top: 5px;">
+                    <span>الإجمالي النهائي:</span>
                     <span id="cartTotalVal">0 ج.م</span>
                 </div>
 
